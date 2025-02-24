@@ -1,0 +1,26 @@
+{
+  "name": "Generic Data Scraping Extension",
+  "description": "Extract data from a webpage and save to a Google Sheet.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "identity"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      // Replace "example.com" with the domain(s) you want to scrape
+      "matches": ["*://example.com/*"],
+      "js": ["content-script.js"]
+    }
+  ]
+}

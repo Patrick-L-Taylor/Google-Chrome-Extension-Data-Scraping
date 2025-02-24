@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Data Capture</title>
+    <!-- popup.js is loaded with defer so it doesn't block the DOM -->
+    <script src="popup.js" defer></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 10px;
+      }
+      #capture-btn {
+        background-color: #0077b5;
+        color: #ffffff;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+      }
+      #capture-btn:hover {
+        background-color: #005d88;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Save Data to Sheets</h1>
+    <button id="capture-btn">Capture Data</button>
+  </body>
+</html>

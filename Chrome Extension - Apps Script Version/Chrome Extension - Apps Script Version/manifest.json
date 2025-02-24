@@ -1,0 +1,26 @@
+{
+  "name": "Data Scraping to Google Sheets (Apps Script Version)",
+  "description": "Extract data from a webpage and save it to a Google Sheet using Apps Script.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "identity"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      // Replace <YOUR_TARGET_WEBSITE_DOMAIN> with the domain of your target site
+      "matches": ["*://**<YOUR_TARGET_WEBSITE_DOMAIN>/*"],
+      "js": ["content-script.js"]
+    }
+  ]
+}
