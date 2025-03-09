@@ -207,4 +207,4 @@ When new versions are released:
 Feel free to submit issues, fork the repository, and create pull requests for any improvements.
 
 ## License
-[Your chosen license]
+This project is licensed under the MIT License — see the LICENSE file for details.
