@@ -1,67 +1,161 @@
-# README (Apps Script Version)
+# Data Scraping Chrome Extension (Apps Script Version)
 
 ## Overview
-This Chrome Extension scrapes data from a target webpage and sends it to a Google Sheet via a Google Apps Script Web App. Use it to automate data collection for your personal or business needs.
-
-## How It Works
-1. **User clicks** the “Capture Data” button in the extension’s popup.  
-2. The **content script** scrapes data from the currently active webpage using CSS selectors you provide.  
-3. The data is **sent** to your Google Apps Script endpoint.  
-4. The Google Apps Script **appends** the data as a new row in your chosen Google Sheet.
+This Chrome Extension allows you to scrape webpage data and automatically save it to Google Sheets using Google Apps Script. This version is perfect for individual users or small teams needing quick deployment with minimal setup complexity.
 
 ## Requirements
-- A **Google Sheet** where your data will be stored.  
-- A **Google Apps Script** file attached to that sheet or a standalone script that can write to a sheet.  
-- A **deployed Web App URL** from your Apps Script with permissions set properly (e.g., “Anyone with the link can access”).
+- A **Google Sheet** where your data will be stored
+- A **Google Account** with permission to create Apps Scripts
+- Chrome browser with Developer mode enabled
+- Basic familiarity with Chrome Extensions
+
+## How It Works
+1. User clicks the extension's "Capture Data" button
+2. Content script scrapes webpage data using configured CSS selectors
+3. Data is sent to your Google Apps Script Web App endpoint
+4. Apps Script appends the data as a new row in your Google Sheet
 
 ## Setup Instructions
 
-1. **Clone or download** this repository.
+### 1. Google Sheets Setup
+1. Create a new Google Sheet at [sheets.google.com](https://sheets.google.com)
+2. Add headers to your first row (A1, B1, C1, D1) matching your data points:
+   - Example: "Title" | "Price" | "Rating" | "URL"
 
-2. **Open the `manifest.json` file**:
-   - Update the `matches` key under `content_scripts` to match the domain you are scraping. For example:
-     ```json
-     "matches": ["*://**example.com/*"]
-     ```
+### 2. Apps Script Setup
+1. In your Google Sheet, click `Extensions` > `Apps Script`
+2. Delete any code in the editor
+3. Copy and paste the content from `google_sheets_app_script.gs`
+4. Modify the `SECRET_TOKEN`:
+   ```javascript
+   const SECRET_TOKEN = "create-your-own-secret-string-here";
+   ```
+   - Create a unique, secure string (e.g., "my-secure-token-12345")
+   - Save this token for later use
 
-3. **Update the CSS Selectors in `content-script.js`**:
-   - Replace `<YOUR_SELECTOR_1>`, `<YOUR_SELECTOR_2>`, etc., with actual selectors that match the webpage elements you want to scrape.
-   - You can test these selectors in your browser’s DevTools console before finalizing them.
+5. Deploy the Web App:
+   1. Click `Deploy` > `New deployment`
+   2. Click `Select type` > `Web app`
+   3. Configure:
+      - Description: "Data Scraping Web App"
+      - Execute as: "Me"
+      - Who has access: "Anyone"
+   4. Click `Deploy`
+   5. Click `Authorize access`
+   6. In the security prompt:
+      - Click `Advanced` > `Go to [Project Name] (unsafe)`
+      - Click `Allow`
+   7. **Copy the Web App URL** for later use
 
-4. **Update the Web App URL in `popup.js`**:
-   - Find the line:
-     ```js
-     const webAppUrl = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
-     ```
-   - Replace `"YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"` with the **deployment URL** from your Apps Script (e.g., `https://script.google.com/macros/s/ABC123/exec`).
+### 3. Extension Setup
+1. Configure `manifest.json`:
+   ```json
+   "matches": ["*://*.yourwebsite.com/*"]
+   ```
+   Replace with your target domain(s)
 
-5. **Set up the Google Apps Script**:
-   1. Open or create a Google Apps Script project ([script.google.com](https://script.google.com)) bound to your target Google Sheet (or a standalone project with the correct sheet ID).
-   2. Copy and paste the content from `google_sheets_app_script.gs` into your Apps Script editor.
-   3. Deploy the script as a **Web App** (under **Deploy** > **New Deployment**):
-      - **Who has access**: Choose “Anyone” or “Anyone with the link,” depending on your security needs.
-      - **Web app URL**: Copy this URL and paste it in `popup.js`.
+2. Configure `content-script.js`:
+   ```javascript
+   // Replace with your actual selectors
+   const selectors = {
+     datapoint1: '.your-selector-1',
+     datapoint2: '.your-selector-2'
+   };
+   ```
 
-6. **Load the Extension in Chrome**:
-   1. Go to `chrome://extensions` in your Chrome browser.
-   2. Toggle **Developer mode** (top right).
-   3. Click **“Load unpacked”**.
-   4. Select the folder containing these files (the folder with `manifest.json`).
-   5. The extension should now appear in your list of installed extensions.
+3. Configure `popup.js`:
+   ```javascript
+   const webAppUrl = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+   const SECRET_TOKEN = "YOUR_SECRET_TOKEN_VALUE";
+   ```
 
-7. **Test the Extension**:
-   1. Navigate to a page that matches your domain filter (e.g., `example.com`).
-   2. Click the extension icon, then the **Capture Data** button.
-   3. Check your Google Sheet to see if a new row has been appended with the scraped data.
+### 4. Testing
+1. Visit a webpage matching your domain filter
+2. Click the extension icon
+3. Press "Capture Data"
+4. Verify data appears in your Google Sheet
 
 ## Customizing
 
-- **Data Fields**: Modify the keys (`datapoint1`, `datapoint2`, etc.) to better reflect the data you’re capturing, both in `content-script.js` and the Apps Script.  
-- **Sheet Columns**: You can reorder or format how data is appended in the row within the `appendRow` function in `google_sheets_app_script.gs`.  
-- **Styling**: Customize `popup.html` and the extension icons (`icon.png`) to suit your branding.
+### Data Fields
+- Modify selectors in `content-script.js`
+- Update data processing logic
+- Add new fields as needed
+
+### Sheet Columns
+- Adjust column order in `google_sheets_app_script.gs`
+- Modify data formatting
+- Add data validation if needed
+
+### Styling
+- Customize `popup.html`
+- Update extension icon
+- Modify CSS styles
+
+## Extension Configuration
+
+### manifest.json Examples
+json
+// Single domain
+"matches": ["://.example.com/"]
+// Multiple domains
+"matches": ["://.site1.com/", "://.site2.com/"]
+// All sites (use with caution)
+"matches": ["<all_urls>"]
+
+### Testing Selectors
+
+javascript
+// In browser console:
+document.querySelector('.your-selector')
+document.querySelectorAll('.your-selector')
+
 
 ## Troubleshooting
 
-- **No data is scraped**: Ensure your CSS selectors are correct. Right-click the element in Chrome and choose “Inspect” to confirm the correct selector.  
-- **Permission errors**: Check the sharing settings for your Google Apps Script Web App. It must allow POST requests from anyone (or at least anyone with the link).  
-- **Console errors**: Open the browser console (F12 in Chrome) to see if there are any script errors. The console in the popup and the background script can be found by right-clicking the extension icon > “Inspect popup” or by going to `chrome://extensions` and clicking **“service worker”** under your extension.
+### Selector Issues
+1. **Element Not Found**
+   - Verify selector in DevTools console
+   - Check for dynamic content loading
+   - Try more specific selectors
+   ```javascript
+   // Example of more specific selector
+   document.querySelector('.parent-class .specific-class')
+   ```
+
+2. **Dynamic Content**
+   ```javascript
+   // Add delay for dynamic content
+   setTimeout(() => {
+     const element = document.querySelector('.selector');
+   }, 1000);
+   ```
+
+### Apps Script Issues
+1. **"Unauthorized" Error**
+   - Verify SECRET_TOKEN matches in both files
+   - Check Web App deployment settings
+   - Ensure "Execute as: Me" is selected
+
+2. **"Failed to fetch" Error**
+   - Verify Web App URL is correct
+   - Check if script is properly deployed
+   - Confirm Apps Script is not hitting quota limits
+
+3. **Data Not Appearing**
+   - Check Apps Script execution logs
+   - Verify sheet name and range
+   - Confirm data format matches expectations
+
+### Common Extension Issues
+- Enable Developer Mode in Chrome
+- Check browser console for errors (F12)
+- Verify manifest.json permissions
+- Confirm content script is injecting properly
+
+## Support
+1. Check browser console (F12)
+2. Review Apps Script execution logs
+3. Verify all tokens and URLs match
+4. Test selectors individually
+5. Examine network requests in DevTools

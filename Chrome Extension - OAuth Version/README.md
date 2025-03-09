@@ -1,95 +1,118 @@
-# README (OAuth Version)
+# Google Sheets Data Scraping Extension (OAuth Version)
 
 ## Overview
-This Chrome Extension scrapes data from a target webpage and sends it directly to a Google Sheet via the **Google Sheets API** with **OAuth 2.0**. Use it to automate data collection for your personal or business needs.
-
-## How It Works
-1. **User clicks** the “Capture Data” button in the extension’s popup.  
-2. The **content script** scrapes data from the currently active webpage using CSS selectors you provide.  
-3. The extension **requests** OAuth authorization from your Google account (using `chrome.identity.launchWebAuthFlow`).  
-4. With a valid OAuth access token, the extension **calls** the Google Sheets API to append the scraped data as a new row in your chosen spreadsheet.
+This Chrome Extension scrapes data from target webpages and sends it directly to Google Sheets via the **Google Sheets API** with **OAuth 2.0** authentication. Perfect for automated data collection that requires enterprise-level security and scalability.
 
 ## Requirements
-- A **Google Cloud Project** with the **Google Sheets API** enabled.  
-- A **Client ID** for OAuth 2.0 (type: **Web application**) that includes a redirect URI in the format: https://<YOUR_EXTENSION_ID>.chromiumapp.org/
-- A **Google Sheet** where your data will be stored (copy the **Spreadsheet ID** from its URL).  
-- Familiarity with **Chrome Extensions** and the **Google Cloud Console**.
+- A **Google Cloud Project** with the Google Sheets API enabled
+- An **OAuth 2.0 Client ID** (Web application type)
+- A **Google Sheet** to store your data
+- Chrome browser with Developer mode enabled
+- Basic familiarity with Chrome Extensions and Google Cloud Console
+
+## How It Works
+1. User clicks the extension's "Capture Data" button
+2. Content script scrapes webpage data using configured CSS selectors
+3. Extension requests OAuth authorization via `chrome.identity.launchWebAuthFlow`
+4. With valid OAuth token, data is sent directly to Google Sheets API
 
 ## Setup Instructions
 
-1. **Clone or download** this repository.
+### 1. Google Cloud Project Setup
+1. Open the [Google Cloud Console](https://console.cloud.google.com)
+2. Create or select a project
+3. Enable the **Google Sheets API** under "APIs & Services"
+4. Configure the OAuth consent screen:
+   - Set application name
+   - Add necessary scopes
+   - Add test users if needed
 
-2. **Open the `manifest.json` file**:  
- - Update the `"matches"` field under `"content_scripts"` to match the domain you want to scrape. For example:
+### 2. OAuth Configuration
+1. In Google Cloud Console, go to "Credentials"
+2. Create an **OAuth 2.0 Client ID** (Web application type)
+3. Add authorized redirect URI:
+   ```
+   https://<YOUR_EXTENSION_ID>.chromiumapp.org/
+   ```
+   Note: You'll get your extension ID after loading it in Chrome
+
+### 3. Extension Installation
+1. Update `manifest.json`:
    ```json
    "matches": ["*://example.com/*"]
    ```
- - Replace `example.com` with the actual site(s) you plan to target.
+   Replace with your target domain(s)
 
-3. **Update the CSS Selectors in `content-script.js`**:  
- - Replace any placeholders like `<YOUR_SELECTOR_1>` with actual selectors that match the webpage elements you want to scrape.
- - You can test these selectors in your browser’s DevTools console by typing `document.querySelector('<YOUR_SELECTOR_1>')` to ensure they select the correct element.
-
-4. **Configure OAuth in `popup.js`**:
- - Find the line:
-   ```js
+2. Configure `popup.js`:
+   ```javascript
    const CLIENT_ID = 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com';
-   ```
-   Replace it with your actual **OAuth Client ID** from the Google Cloud Console (something like `1234567890-abc123def456.apps.googleusercontent.com`).
- - Next, locate:
-   ```js
    const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
    ```
-   Replace `'YOUR_SPREADSHEET_ID_HERE'` with your **Google Sheet’s** ID (the long string in the sheet’s URL).
- - Optionally update the `RANGE` variable if needed (e.g., `'Sheet1!A:E'`).
 
-5. **Set up and Verify Your Google Cloud Project**:
- 1. Open the [Google Cloud Console](https://console.cloud.google.com).  
- 2. Create or select a project and **enable the Google Sheets API** under **APIs & Services**.  
- 3. Under **Credentials**, create or edit an **OAuth 2.0 Client ID** (type **Web application**).  
- 4. In **Authorized redirect URIs**, add:
-    ```
-    https://<YOUR_EXTENSION_ID>.chromiumapp.org/
-    ```
-    where `<YOUR_EXTENSION_ID>` matches the ID assigned by Chrome once you load this extension.
+3. Update CSS selectors in `content-script.js`:
+   ```javascript
+   // Replace with your actual selectors
+   const selectors = {
+     datapoint1: '.your-selector-1',
+     datapoint2: '.your-selector-2'
+   };
+   ```
 
-6. **Load the Extension in Chrome**:
- 1. Go to `chrome://extensions` in your browser.  
- 2. Toggle **Developer mode** (usually top right).  
- 3. Click **“Load unpacked”**.  
- 4. Select the folder containing the extension files (the folder with `manifest.json`).  
- 5. The extension should now appear in your list of installed extensions.
+4. Load in Chrome:
+   - Navigate to `chrome://extensions`
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select the extension folder
 
-7. **Test the Extension**:
- 1. Navigate to a webpage that matches your `manifest.json` domain filter.  
- 2. Click the extension’s icon in the Chrome toolbar.  
- 3. In the popup, click **Capture Data**.  
- 4. The first time you use it, Google will ask you to **authorize** access to the Sheets API.  
- 5. After authorization, the extension should append a new row to your Google Sheet with the scraped data.
+### 4. Testing
+1. Visit a webpage matching your domain filter
+2. Click the extension icon
+3. Press "Capture Data"
+4. Complete OAuth authorization (first time only)
+5. Verify data appears in your Google Sheet
 
 ## Customizing
 
-- **Data Fields**: In `content-script.js`, rename or add keys (e.g., `datapoint1`, `datapoint2`) for different data. In `popup.js`, adjust the array passed to the `appendDataToSheet()` function to match your data structure.  
-- **Sheet Columns**: Modify or reorder columns by changing the order of data in the array in `popup.js`.  
-- **Styling**: Update `popup.html` and any related CSS to reflect your design. Replace `icon.png` with your own icon to personalize the extension.
+### Data Fields
+- Modify selectors in `content-script.js`
+- Update data processing logic
+- Add new fields as needed
+
+### Sheet Columns
+- Adjust column order in `popup.js`
+- Modify data formatting
+- Add data validation if needed
+
+### Styling
+- Customize `popup.html`
+- Update extension icon
+- Modify CSS styles
 
 ## Troubleshooting
 
-- **Invalid Redirect URI**: If you get an error during OAuth, check that your **Authorized redirect URIs** in the Google Cloud Console exactly match: https://<YOUR_EXTENSION_ID>.chromiumapp.org/
+### OAuth Issues
+- **Invalid Redirect URI**: Verify the URI exactly matches:
+  ```
+  https://<YOUR_EXTENSION_ID>.chromiumapp.org/
+  ```
+- **Authorization Failed**: Check OAuth consent screen configuration
+- **Token Expired**: Extension will automatically refresh tokens
 
-(Replace `<YOUR_EXTENSION_ID>` with your actual extension ID.)
+### Data Scraping Issues
+- **No Data Found**: Verify selectors in DevTools console:
+  ```javascript
+  document.querySelector('your-selector')
+  ```
+- **Wrong Data**: Check selector specificity
+- **Dynamic Content**: Add appropriate delays
 
-- **No Data is Scraped**: Ensure the CSS selectors in `content-script.js` are correct. Use the DevTools console (`document.querySelector(...)`) to verify.  
+### API Issues
+- **Quota Exceeded**: Check Google Cloud Console quotas
+- **Permission Denied**: Verify API is enabled
+- **Invalid Request**: Check spreadsheet ID and range
 
-- **Consent Screen / “Unverified App”**: You may need to configure the **OAuth consent screen** or restrict usage to test users in the Google Cloud Console.  
-
-- **Sheets API Errors**:
-- Right-click the extension icon and select **“Inspect popup”** to see console logs for the popup script.  
-- Go to `chrome://extensions`, find your extension, and click the **“service worker”** or **“background page”** link to view logs from the background script.
-
-- **Permission Denied**: Confirm that the Google Sheets API is enabled and your OAuth Client ID includes scope: https://www.googleapis.com/auth/spreadsheets
-
-This scope must be requested to append data to Sheets.
+### Permission Issues
+Required scope: https://www.googleapis.com/auth/spreadsheets
 
 
 

@@ -11,6 +11,15 @@ function doGet(e) {
 }
 
 function doPost(e) {
+  const SECRET_TOKEN = "YOUR_SECRET_TOKEN_VALUE";
+  if (!e.parameter.secret || e.parameter.secret !== SECRET_TOKEN) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: "Unauthorized"
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+  }
+
   try {
     // Log the parameters for debugging
     console.log('Received POST request parameters:', e.parameter);

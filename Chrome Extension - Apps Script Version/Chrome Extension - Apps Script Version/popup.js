@@ -28,11 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
           // TODO: Replace this URL with your deployed Apps Script Web App URL
           const webAppUrl = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
 
+          // Add a constant for the secret token
+          const SECRET_TOKEN = "YOUR_SECRET_TOKEN_VALUE";
+
           // Prepare form data for sending to the Apps Script
           const formData = new FormData();
           Object.entries(data).forEach(([key, value]) => {
             formData.append(key, value);
           });
+
+          // Append the secret token as well
+          formData.append('secret', SECRET_TOKEN);
 
           try {
             // POST data to your Apps Script Web App endpoint
